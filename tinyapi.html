@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TinyAPI, a python microservice framework for quick API development</title>
+
+    <link rel="stylesheet" href="./static/css/main.css">
+
+</head>
+<body>
+    <div class="wrapper">
+        <div class="table_of_contents">
+            <ul>
+                <li> <a href="index.html">Home</a> </li>
+                <li> <a href="#">TinyAPI</a> </li>    
+            </ul>
+        </div>
+    
+        <div class="views_and_routing">
+            <h2> Views and Routing </h2>
+            Views are the functions/classes where you specify the routes and implement the main logic. <br>
+           
+           <h4>Function Based Views </h4> 
+           <p> Function based views are very simple to implement.</p>
+            <pre> 
+                <code>
+                    @app.route('/home') 
+                    def home(request):  
+                        return JsonResponse({'data':'hello world'},Status.HTTP_200_OK)
+                    
+                </code>
+            </pre>
+
+            <p>You can also specify the specific <strong> <i>allowed methods</i> </strong> for a particular view.</p>
+
+            <pre>
+                <code>
+                    @app.route('/home', allowed_methods=['GET','POST']) 
+                </code>
+            </pre>
+
+            <h4>Class Based Views </h4> 
+            <p> A class based view is also supported in tiny-api.</p>
+            <pre>
+                <code>
+                    @app.route('/home')
+                    class Home:
+                        ALLOWED_METHODS = ['GET']
+                        
+                        def get(self,request):
+                            return JsonResponse({'data':'hello world'},Status.HTTP_200_OK)
+
+                </code>
+            </pre>
+
+
+        </div>
+    
+        <div class="request">
+            <h2> Requests </h2>
+
+            <p>
+                The request is an object of class <strong> <i> Request </i> </strong> which is subclassed from <strong> <i> webob.Request </i> </strong>. 
+                Access the elements from request:-<br> <br>
+                Example: Access the bearer token as :-
+            </p>
+
+            <pre><code>
+                bearer = request.bearer
+            </code></pre>
+            (this returns a bearer token passed from the client if present else returns None)
+            <br> <br>
+
+            <p>
+                Access the Post data:-
+            </p>       
+            <pre>
+                <code>
+                    username = request.POST.get['username']
+                </code>
+            </pre>   
+            
+            <p>
+                Access the Query string:-
+            </p>       
+            <pre>
+                <code>
+                    username = request.params.get['username']
+                </code>
+            </pre> 
+
+            <p> Visit here for more info:- <a href="https://docs.pylonsproject.org/projects/webob/en/stable/api/request.html">Webob Request</a> </p>
+
+        </div>
+    
+        <div class="json_response">
+            <h2> Json Response </h2>
+            JsonResponse helps to send back the response in JSON format which can be consumed in the frontend part. <br> <br>
+            You can import it as :
+            <pre>
+                <code>
+                    from tiny_api.Responses import json_response
+                </code>
+            </pre>
+
+            Return JsonResponse as :-
+            <pre>
+                <code>
+                    return JsonResponse({'data':'data'},status_code)
+                </code>
+            </pre>
+                
+        </div>
+    
+        <div class="middleware">
+            <h2> Middleware </h2>
+            <p>
+            A middleware is an application that processes the incoming/outgoing requests and responses. <br>
+            You can add your custom middleware and tweak the requests and responses as per your requirements. <br>
+            Example:- 
+            </p>
+            <pre>
+                <code>
+                    class CustomMiddleware(Middleware):
+                        def process_request(self, request):
+                            request.add_param("hey","there")
+                            # add_param allows you to add custom elements to the request object
+
+                    app = Tinyapi()
+                    app.add_middleware(CustomMiddleware)
+
+                </code>
+            </pre>
+
+            <p>
+                To add your custom middleware, you have to inherit the <strong><i>Middleware</i> </strong> class and overide the <strong><i> process_request </i></strong> 
+                and <br>
+                <strong><i> process_response </i> </strong> methods.
+            </p>
+        </div>
+    
+        <div class="jwt_tokens">
+            <h2> JSON Web Tokens </h2>
+            <p>
+                Since tiny-api encourages to have client and server separated from each other, jwt tokens are best suited for such applications. <br>
+                Tiny-api has inbuilt jwt token support. It uses <strong><i>pyjwt</i></strong> package to provide token authentication  and uses <strong>'<i>HS256</i>'</strong>  algorithm.<br>
+                Create/decode tokens in tiny-api as:-
+                <pre>
+                    <code>
+                        from tiny_api.jwt_tokens import create_access_token, create_refresh_token, decode_access_token
+                        
+                        # creates an access token
+                        access_token = create_access_token(user_id = 1, username = 'hellouser', seconds = 1800, secret_key = None)
+
+                        # creates a refresh token, return an object of class uuid.UUID
+                        refresh_token = create_refresh_token()
+
+                        # decodes the access token, returns a boolean value and the actual data
+                        is_valid, data = decode_access_token(data = access_token, secret_key = None)
+
+                    </code>
+                </pre>
+                <p> The <strong><i> 'decode_access_token'  </i></strong>  returns two values. The first value is a boolean and it specifies either the token is valid or not. <br>
+                    The second value is the actual data. If the token is invalid then instead of returning the data it returns an exception object. <br> 
+                    Hence always check if the token is valid or not before using the data.
+                </p>
+                <h4> Secret Key </h4>
+                <p> But what is this secret key?? Well, its a secret key :) :) . By default the secret key is <strong>'<i>myappsecret123abc</i>'</strong> . <br>
+                    However, this is not secure at all. Hence, it is recommended to add your own <i>secret key</i>. For this, create a 
+                    <strong> <i>.env</i> </strong> file and add this:- <br>
+                    <pre>
+                        <code>
+                            SECRET_KEY=your_secret_key
+                        </code>
+                    </pre>
+                    (Replace <strong><i> your_secret_key </i></strong> with your secret key.)
+
+                </p>
+
+            </p>
+        </div>
+    
+        <div class="auth">
+            <h2> Authentication </h2>
+            <p>
+                Check if the request is authenticated or not, i.e if the requets contains a valid bearer token or not.
+                <pre>
+                    <code>
+                        from tiny_api.auth import is_authenticated
+                        
+                        # return a boolean value
+                        is_auth = is_authenticated(request)
+                    </code>
+                </pre>
+
+                You can also make a view accessible only by the authenticated users. For this:- 
+                <pre>
+                    <code>
+                        from tiny_api.auth import authenticated
+
+                        @app.route('/authenticated_view')
+                        @authenticated
+                        def authenticated_view(request):
+                        return JsonResponse({'data':'hello world'})
+                    </code>
+                </pre>
+            </p>
+        </div>
+
+        <div class="get_env_vars">
+            <h2>Get Env Vars </h2>
+            <p>
+                Tiny-api provides a very easy way to access the env variables. 
+                <pre>
+                    <code>
+                        from tiny_api.get_env_var import get_env_vars
+
+                        data = get_env_vars('SECRET_KEY',default = 'my_secret_key')
+                        # it returns the SECRET_KEY's value from .env file else returns the default value.
+                    </code>
+                </pre>
+            </p>
+        </div>
+    
+        <div class="template_response">
+            <h2> Templates </h2>
+            <p>
+                Tiny-api supports template rendering using <strong><i> Jinja2 </i></strong>. 
+                (However, not recommended, instead use ajax or React/Vue and keep frontend and backend separate).  <br>
+                For this create <strong><i>template</i></strong> directory. Inside it create <strong><i>index.html</i></strong> file.
+                Inside <strong><i>index.html</i></strong> copy the following:- 
+            </p>
+            
+            <pre>
+                <code>
+                    &lt;html&gt;
+                        &lt;header&gt;
+                            &lt;title&gt;{{ title }}&lt;/title&gt;
+                        &lt;/header&gt;
+
+                        &lt;body&gt;
+                            hello {{ name }}
+                        &lt;/body&gt;
+                    &lt;/html&gt;
+                </code>
+            </pre>
+
+            <p>
+                Now, create a view.
+            </p>
+            
+            <pre>
+                <code>
+                    from Responses import TemplateResponse
+
+                    app = Tinyapi()
+
+                    @app.route('/template_view')
+                    def template_view(request):
+                        return TemplateResponse(app=app,'index.html',context = {'title':'page title','name':'my name'})
+
+                </code>
+            </pre>
+            <p> Now run the app and you will see the magic :) :) .</p>
+        </div>
+    
+        <div class="staticfiles">
+            <h2> Static Files </h2>
+            <p>
+                Tiny-api also supports static files. It serves the static files using <strong><i>whitenoise</i></strong>. <br>
+                Create a new directory named <strong><i>static</i></strong> and create a sub directory named <strong><i>css</i></strong>. <br>
+                Inside this create <strong><i>main.css</i></strong> file. Create <strong><i>index.html</i></strong> file inside the <strong><i>template</i></strong> directory
+                and copy the following:- 
+            </p>
+            
+            <pre>
+                <code>
+                    &lt;html&gt;
+                        &lt;header&gt;
+                            &lt;title&gt;{{ title }}&lt;/title&gt;
+                            &lt;link href=&quot;/static/css/main.css&quot; type=&quot;text/css&quot; rel=&quot;stylesheet&quot;&gt;
+                        &lt;/header&gt;
+                    
+                        &lt;body&gt;
+                            hello {{ name }}
+                        &lt;/body&gt;
+                    &lt;/html&gt;
+                </code>
+            </pre>
+
+            <p> Now inside <strong><i>main.css</i></strong> copy folowing and save. </p>
+
+            <pre>
+                <code>
+                    body {
+                        background-color:red;
+                    }
+                </code>
+            </pre>
+
+            <p> Now create a view as defined in the <Strong>Template</Strong> section above and visit 
+                <strong><i>127.0.0.1:8000/template_view </i></strong> page to see the magic.</p>
+        </div>
+
+        <div class="database">
+            <h2> Database Support and ORM</h2>
+            <p> Tiny-api is compatible with both relational(eg:-sqlite, postgresql) and non-relational (eg:-mongodb) databases. <br>
+             For SQL database you can use the packages like <strong><i>sqlalchemy</i></strong> and <strong><i>marshmallow-sqlalchemy.</i></strong> <br>
+             For Mongodb, you can use the package like <strong><i>pymongo.</i></strong></p>
+        </div>
+    
+    </div>
+    
+
+    
+</body>
+</html>

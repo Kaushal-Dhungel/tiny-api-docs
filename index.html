@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home-TinyAPI, a python microservice framework for quick API development</title>
+
+    <link rel="stylesheet" href="./static/css/main.css">
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="table_of_contents">
+    
+            <ul>
+                <li> <a href="#">Home</a> </li>
+                <li> <a href="tinyapi.html">TinyAPI</a> </li>
+            </ul>
+        </div>
+    
+        <div class="about_section">
+            <h2> Tiny API </h2>
+            <p> 
+                Tinyapi is a tiny python web framework for quick API development. Its fast, and very easy to get started. 
+                It's not a competitor of other frameworks like Django, Flask or FastAPI. <br>
+                The sole purpose of creating it is for learning and gaining better insights about 
+                how a backend technology works.  <br>
+
+                It is created with the help of <a href="https://docs.pylonsproject.org/projects/webob/en/stable/">webob</a>. 
+                Webob is a library which provides objects for HTTP requests and responses.
+                <br> <br>
+                <strong>Note:- </strong> <i> tiny-api also supports template rendering however it is not recommended. <br> 
+                It is better suited for client-server architectured applications. Hence, it's better to use it with something like React js or Angualr.</i>
+            </p>
+        </div>
+
+        <div class="installation">
+            <h2> Installation </h2>
+            <p> Open your terminal and enter:-</p>
+            <pre>
+                <code>
+                    $ pip3 install tiny-api 
+                </code>
+            </pre>
+
+            <p> Github :-</p>
+            <pre>
+                <code>
+                    $ git clone https://github.com/Kaushal-Dhungel/tiny-api.git
+                </code>
+            </pre>
+
+        </div>
+    
+        <div class="quick_demo">
+            <h2> Getting Started </h2>
+            <p> Its really easy to get startted with tiny-api. Copy the code below and save it as <strong>app.py</strong> :- </p>
+            <pre>
+                <code>
+                    from tiny_api import Tinyapi
+                    from tiny_api.Responses import JsonResponse
+                    from tiny_api.Status import HTTP_200_OK
+
+                    app = Tinyapi()
+
+                    @app.route('/home')
+                    def home(request):
+                        return JsonResponse({'data':'hello world'},HTTP_200_OK)
+                </code>
+            </pre>
+
+            <p> Now open the terminal and run :- </p>
+            <pre>
+                <code>
+                    $ gunicorn app:app --reload
+                </code>
+            </pre>
+            <p> That's it. Now visit <strong>127.0.0.1:8000/home </strong> on your browser and you will see :-</p>
+            <pre>
+                <code>
+                    {'data':'hello world'}
+                </code>
+            </pre>
+
+            <p> Congratulations !! </p>
+
+        </div>
+
+        <div class="project_social">
+            <h2> Project Links </h2>
+            <ul>
+                <li> <a href="github.com/kaushal-dhungel/tiny-api">Github</a> </li>
+                <li> <a href="pypi.org/project/tiny-api/">Pypi</a> </li>
+            </ul>
+        </div>
+    
+        <div class="credit_section">
+            <h2> Credit </h2>
+            This project is created with the help of this awesome blog series written by <strong>Jahongir Rahmonov</strong>.
+            Check them here:- <a href="https://rahmonov.me/posts/write-python-framework-part-one/"> Visit </a>
+        </div>
+    
+        <div class="social_section">
+            <h2> Connect With Me </h2>
+            <ul>
+                <li> <a href="https://twitter.com/kaushal_dhungel">Twitter</a> </li>
+                <li> <a href="github.com/kaushal-dhungel">Github</a> </li>
+                <li> <a href="gitlab.com/nepalikaushal1">Gitlab</a> </li>
+                <li> <a href="linkedin.com/kaushal-dhungel">Linkedin</a> </li>
+
+            </ul>
+        </div>
+    
+    </div>
+    
+</body>
+
+</html>
